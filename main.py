@@ -1,21 +1,46 @@
 import praw
-import pprint
+from pprint import pprint
 
 def main():
-    user_agent = "NowKithMikeTyson 0.0 by /u/redleader6432"
-    r = praw.Reddit(user_agent=user_agent)
+    user_agent = "NowKith 0.1 by /u/redleader6432"
+    r = praw.Reddit(user_agent=user_agent)              #get reddit
 
-    user_name = "redleader6432"
-    user = r.get_redditor(user_name)
+    user_name = "NowKithBot"
+    user = r.get_redditor(user_name)                    #get user
 
-    thing_limit = 10
-    subreddit = r.get_subreddit('bestof')
-    for submission in subreddit.get_hot(limit=10):
-        print(submission.url)
+    subreddit = r.get_subreddit('politics')             #get subreddit
+    for submission in subreddit.get_hot(limit=50):      #for each hot submission
+        print(submission.id)
+        checkComments(r, submission.id)                 #check comments
+
+    print("Finished")
+    #TODO - time elapsed, total checked/found
+
+
+def checkComments(reddit, submissionid):
+    submission = reddit.get_submission(submission_id = submissionid)    #get submission from id
+    #submission.replace_more_comments(limit=15, threshold=20)            #grabs more comments, takes longer
+
+    forest_comments = submission.comments                               #gets comment tree
+    flat_comments = praw.helpers.flatten_tree(forest_comments)          #flatten tree for easy searching
+
+    #TODO - method to traverse comment forest more efficiently
+
+    processedComments = 0
+    for comment in flat_comments:
+        if hasattr(comment, 'body'):            #check that this isnt a MoreComments object
+            processedComments +=1
+            if "Now kiss" in comment.body:         #TODO - better string matching
+                print("Found kiss instance at:")
+                print(submission.url)
+
+    print("Processed:",processedComments)       #Number of comments checked
+
+    #TODO - add timing for efficiency stats
 
 
 
-def test():
+def test():             #grabs comment/submitted karma breakdown by subreddit
     user_agent = "NowKithMikeTyson 0.0 by /u/redleader6432"
     r = praw.Reddit(user_agent=user_agent)
 
