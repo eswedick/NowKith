@@ -1,17 +1,22 @@
 import praw
+import time
 from pprint import pprint
 
 def main():
-    user_agent = "NowKith 0.1 by /u/redleader6432"
+    user_agent = "NowKith 1.0 by /u/redleader6432"
     r = praw.Reddit(user_agent=user_agent)              #get reddit
 
     user_name = "NowKithBot"
+    r.login(user_name, "M1keTys0nwtcys")
     user = r.get_redditor(user_name)                    #get user
 
-    subreddit = r.get_subreddit('politics')             #get subreddit
+    i = 1
+    subreddits = ["funny","pics","AdviceAnimals","todayilearned","aww","me_irl","gifs","videos","gaming","WTF","BlackPeopleTwitter","leagueoflegends","askreddit","DotA2","ShowerThoughts"]
+    subreddit = r.get_subreddit('todayilearned')             #get subreddit
     for submission in subreddit.get_hot(limit=50):      #for each hot submission
-        print(submission.id)
+        print(i,'. ',submission.id)
         checkComments(r, submission.id)                 #check comments
+        i += 1
 
     print("Finished")
     #TODO - time elapsed, total checked/found
@@ -27,13 +32,18 @@ def checkComments(reddit, submissionid):
     #TODO - method to traverse comment forest more efficiently
 
     processedComments = 0
+    matches = ["Now kiss", "now kiss", "Now kith", "just kiss", "Just kiss"]
+    done = []
     for comment in flat_comments:
-        if hasattr(comment, 'body'):            #check that this isnt a MoreComments object
+        if hasattr(comment, 'body'):             #check that this isnt a MoreComments object
             processedComments +=1
-            if "Now kiss" in comment.body:         #TODO - better string matching
+            hasMatch = any(string in comment.body for string in matches)
+            if submission.id not in done and hasMatch:         #TODO - better string matching
+                comment.reply("http://imgur.com/hUNAo")
+                done.append(submission.id)
                 print("Found kiss instance at:")
-                print(submission.url)
-
+                print(comment.permalink)
+    
     print("Processed:",processedComments)       #Number of comments checked
 
     #TODO - add timing for efficiency stats
