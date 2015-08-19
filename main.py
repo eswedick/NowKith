@@ -12,11 +12,12 @@ def main():
 
     i = 1
     subreddits = ["funny","pics","AdviceAnimals","todayilearned","aww","me_irl","gifs","videos","gaming","WTF","BlackPeopleTwitter","leagueoflegends","askreddit","DotA2","ShowerThoughts"]
-    subreddit = r.get_subreddit('todayilearned')             #get subreddit
-    for submission in subreddit.get_hot(limit=50):      #for each hot submission
-        print(i,'. ',submission.id)
-        checkComments(r, submission.id)                 #check comments
-        i += 1
+    for string in subreddits:
+        subreddit = r.get_subreddit(string)                 #get subreddit
+        for submission in subreddit.get_hot(limit=50):      #for each hot submission
+            print(i,'. ',submission.id)
+            checkComments(r, submission.id)                 #check comments
+            i += 1
 
     print("Finished")
     #TODO - time elapsed, total checked/found
@@ -50,7 +51,7 @@ def checkComments(reddit, submissionid):
 
 
 
-def test():             #grabs comment/submitted karma breakdown by subreddit
+def test():
     user_agent = "NowKithMikeTyson 0.0 by /u/redleader6432"
     r = praw.Reddit(user_agent=user_agent)
 
